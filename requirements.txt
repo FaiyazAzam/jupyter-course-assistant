@@ -1,0 +1,16 @@
+# --- Core AI dependencies (PINNED for reproducibility) ---
+llama-index==0.14.7
+llama-index-core==0.14.7
+llama-index-llms-openai==0.6.7
+llama-index-embeddings-openai==0.5.1
+llama-parse==0.6.54
+openai==1.109.1
+
+# --- Utility packages ---
+python-dotenv
+nbformat
+nest-asyncio
+ipython
+
+# --- Jupyter environment ---
+jupyter
