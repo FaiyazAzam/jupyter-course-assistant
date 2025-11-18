@@ -17,6 +17,8 @@ This repository contains a Jupyter-native AI Teaching Assistant that supports:
 Powered by LlamaIndex, OpenAI, and a custom IPython magic extension.
 
 📁 Repository Structure
+
+```
 .
 ├── agent_test.ipynb
 ├── research_agent_magic.py
@@ -26,43 +28,52 @@ Powered by LlamaIndex, OpenAI, and a custom IPython magic extension.
 ├── requirements.txt
 ├── .gitignore
 └── LICENSE
+```
 
 🧩 Installation & Setup
 1. Clone the Repository
-git clone https://github.com/FaiyazAzam/jupyter-course-assistant.git
-cd <repo>
 
-2. Create and Activate a Virtual Environment
+```
+git clone https://github.com/FaiyazAzam/jupyter-course-assistant.git
+cd jupyter-course-assistant
+```
+
+3. Create and Activate a Virtual Environment
 
 macOS / Linux
-
+```
 python3 -m venv .venv
 source .venv/bin/activate
-
+```
 
 Windows PowerShell
-
+```
 python -m venv .venv
 .\.venv\Scripts\activate
+```
 
 3. Install Dependencies
+```
 pip install -r requirements.txt
+```
 
 4. Configure Environment Variables
+```
 cp .env.example .env
-
+```
 
 Edit .env:
-
+```
 OPENAI_API_KEY=your_openai_api_key_here
 LLAMAPARSE_API_KEY=your_llamaparse_key_here   # optional unless re-parsing PDFs
-
+```
 
 ⚠️ An OpenAI API key is required.
 
 5. Launch Jupyter
+```
 jupyter notebook
-
+```
 
 Open agent_test.ipynb.
 
