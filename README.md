@@ -29,7 +29,7 @@ Powered by LlamaIndex, OpenAI, and a custom IPython magic extension.
 
 🧩 Installation & Setup
 1. Clone the Repository
-git clone https://github.com/<your-username>/<repo>.git
+git clone https://github.com/FaiyazAzam/jupyter-course-assistant.git
 cd <repo>
 
 2. Create and Activate a Virtual Environment
