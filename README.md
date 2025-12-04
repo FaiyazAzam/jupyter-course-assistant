@@ -79,31 +79,43 @@ Open agent_test.ipynb.
 
 🧠 Using the Research Agent
 1. Load the Extension
+```
 %load_ext research_agent_magic
+```
 
-2. Initialize the Agent
+3. Initialize the Agent
+```
 %init_research_agent
-
+```
 
 To explicitly specify which notebook to inspect:
-
+```
 %init_research_agent --nb agent_test.ipynb
+```
 
 ❓ Asking Questions
 📚 1. Course Q&A (Default)
+```
 %%research_agent
+```
 Explain the ADMM x-update step.
 
 📝 2. Notebook Analysis
+```
 %%research_agent --tool notebook_inspector
+```
 Summarize this notebook and recommend improvements.
 
 ⚡ 3. Shortcuts
 Course Questions
+```
 %ask What is the intuition behind ADMM?
+```
 
 Notebook Questions
+```
 %ask notebook
+```
 Which sections need clearer explanation?
 
 🔧 Kernel & Environment Notes
@@ -115,24 +127,25 @@ Restart kernel after updating .env
 If LaTeX doesn’t render:
 
 Restart kernel
-
+```
 Run %load_ext research_agent_magic
-
 Run %init_research_agent
+```
 
 🛠️ Troubleshooting
 🔍 Notebook inspector hallucinating?
 
 Run:
-
+```
 %init_research_agent --nb your_notebook.ipynb
+```
 
 🧮 LaTeX not rendering?
 
 Use:
-
+```
 %%research_agent
-
+```
 
 (not print())
 
@@ -140,18 +153,16 @@ Use:
 
 Your .env must contain:
 
+```
 OPENAI_API_KEY=sk-...
+```
 
 👨‍🏫 Instructor Notes
 
 To add more PDFs:
-
 Place PDFs in course_materials/
-
 Update research_agent_magic.py if necessary
-
 Rebuild the PDF embedding index
-
 Students only need %init_research_agent — no preprocessing required
 
 📄 License
