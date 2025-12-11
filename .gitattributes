@@ -1,0 +1,36 @@
+# --------------------------------------
+# Normalize line endings to LF for all text files
+# --------------------------------------
+* text=auto eol=lf
+
+# --------------------------------------
+# Python files should always use LF
+# --------------------------------------
+*.py text eol=lf
+
+# --------------------------------------
+# Markdown + README files
+# --------------------------------------
+*.md text eol=lf
+
+# --------------------------------------
+# Jupyter notebooks: treat as binary to avoid huge diffs + conflicts
+# --------------------------------------
+*.ipynb binary
+
+# --------------------------------------
+# Course index (LlamaIndex persistent store)
+# Treat as binary because format is not stable for diffs
+# --------------------------------------
+course_index/* binary
+
+# --------------------------------------
+# PDF files
+# --------------------------------------
+*.pdf binary
+
+# --------------------------------------
+# Environment files (never convert formatting)
+# --------------------------------------
+.env text eol=lf
+.env.example text eol=lf

@@ -1,18 +1,33 @@
+# -----------------------
 # Python / venv
+# -----------------------
 .venv/
 venv/
 __pycache__/
 *.pyc
 
+# -----------------------
 # Jupyter
+# -----------------------
 .ipynb_checkpoints/
 
-# Env / secrets
+# -----------------------
+# Environment / secrets
+# -----------------------
 .env
 .env.local
 
-# OS / editor cruft
+# -----------------------
+# OS / Editor cruft
+# -----------------------
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+# -----------------------
+# Do NOT ignore course_index/
+# Explicitly include the persisted index
+# -----------------------
+!course_index/
+!course_index/**
