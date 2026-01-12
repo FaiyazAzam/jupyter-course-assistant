@@ -1,6 +1,7 @@
 README.md
 <p align="center"> <h1 align="center">📘 Jupyter Course Assistant</h1> <p align="center"> <b>Agentic RAG inside your Jupyter notebook.</b><br> Ask questions about course PDFs, get LaTeX-rendered answers, and even let the agent review your notebook. </p> </p> <p align="center"> <img src="https://img.shields.io/badge/Python-3.9–3.12-blue?logo=python" /> <img src="https://img.shields.io/badge/LLM-Perplexity%20Sonar-blue" /> <img src="https://img.shields.io/badge/OpenAI-Embeddings%20(for%20instructors)-green?logo=openai" /> <img src="https://img.shields.io/badge/Jupyter-Notebook%20Extension-yellow?logo=jupyter" /> </p>
-🚀 Overview
+
+# 🚀 Overview
 
 This repository contains a Jupyter-native AI Teaching Assistant that supports:
 
@@ -39,7 +40,8 @@ Powered by Perplexity, OpenAI, and a custom IPython magic extension.
 
 ```
 
-🧩 Installation & Setup
+# 🧩 Installation & Setup
+
 1. Clone the Repository
 
 ```
@@ -47,7 +49,7 @@ git clone https://github.com/FaiyazAzam/jupyter-course-assistant.git
 cd jupyter-course-assistant
 ```
 
-3. Create and Activate a Virtual Environment
+2. Create and Activate a Virtual Environment
 
 macOS / Linux
 ```
@@ -91,13 +93,14 @@ jupyter notebook
 
 Open agent_test.ipynb.
 
-🧠 Using the Research Agent
+# 🧠 Using the Research Agent
+
 1. Load the Extension
 ```
 %load_ext perplexity_agent_magic
 ```
 
-3. Initialize the Agent
+2. Initialize the Agent
 ```
 %init_research_agent
 ```
@@ -107,7 +110,8 @@ To explicitly specify which notebook to inspect:
 %init_research_agent --nb agent_test.ipynb
 ```
 
-❓ Asking Questions
+# ❓ Asking Questions
+
 📚 1. Course Q&A (Default)
 ```
 %%research_agent
@@ -132,7 +136,7 @@ Notebook Questions
 ```
 Which sections need clearer explanation?
 
-🔧 Kernel & Environment Notes
+# 🔧 Kernel & Environment Notes
 
 Requires Python 3.9–3.12
 
@@ -148,7 +152,8 @@ Run %load_ext perplexity_agent_magic
 Run %init_research_agent
 ```
 
-🛠️ Troubleshooting
+# 🛠️ Troubleshooting
+
 🔍 Notebook inspector hallucinating?
 
 Run:
@@ -176,8 +181,9 @@ PPLX_MODEL=sonar-pro      # or sonar-reasoning
 OPENAI_API_KEY=sk-...
 ```
 
-🎓 Student Notes
-🔑 Getting Your Perplexity API Key (FREE with Student Verification)
+# 🎓 Student Notes
+
+## 🔑 Getting Your Perplexity API Key (FREE with Student Verification)
 
 The Jupyter Course Assistant uses Perplexity Sonar as the LLM.
 As a student, you can get 1 year of Perplexity Pro for free, which includes monthly API credits.
@@ -230,7 +236,7 @@ PPLX_API_KEY=your_perplexity_api_key_here
 PPLX_MODEL=sonar-pro     # or sonar-reasoning
 ```
 
-📝 Notes for Students
+## 📝 Notes for Students
 
 1. You do not need an OpenAI API key
 
@@ -243,8 +249,9 @@ PPLX_MODEL=sonar-pro     # or sonar-reasoning
 5. The agent will automatically load the persisted index from course_index/ and will NOT re-embed or re-process PDFs.
 
 
-👨‍🏫 Instructor Notes
-🔑 Creating an OpenAI API Key (for embeddings only)
+# 👨‍🏫 Instructor Notes
+
+## 🔑 Creating an OpenAI API Key (for embeddings only)
 
 Students do not need an OpenAI key.
 This is only for the instructor when building the PDF memory.
@@ -262,7 +269,7 @@ OPENAI_API_KEY=sk-...
 ```
 This key is used only once when running build_course_memory.py to generate embeddings.
 
-📚 Adding or Updating Course PDFs
+## 📚 Adding or Updating Course PDFs
 
 1. Place new PDFs inside:
 ```
@@ -286,6 +293,6 @@ course_index/
 build_course_memory.py
 ```
 
-📄 License
+# 📄 License
 
 MIT License.
