@@ -31,3 +31,10 @@ Thumbs.db
 # -----------------------
 !course_index/
 !course_index/**
+
+# Release artifacts (do NOT commit)
+course_index_*.zip
+
+# Generated outputs
+*.png
+*.PNG

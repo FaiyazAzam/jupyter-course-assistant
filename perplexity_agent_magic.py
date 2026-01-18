@@ -9,6 +9,9 @@ import nest_asyncio
 import os
 import re
 import shlex
+import json
+import urllib.request
+import zipfile
 from pathlib import Path
 from dotenv import load_dotenv
 from IPython.core.magic import Magics, magics_class, cell_magic, line_magic
@@ -17,12 +20,114 @@ from IPython.display import Markdown, display
 # LlamaIndex imports
 from llama_index.core.agent.workflow import ReActAgent, FunctionAgent
 from llama_index.core.workflow import Context
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
+# from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
+from llama_index.core import VectorStoreIndex, StorageContext, load_index_from_storage
 from llama_index.core.tools import QueryEngineTool, ToolMetadata
 from llama_index.llms.openai_like import OpenAILike  # 🔁 switched from OpenAI -> OpenAILike
 
 nest_asyncio.apply()
 load_dotenv()
+
+# ------------------------------
+# Remote course index auto-update (GitHub Releases)
+# ------------------------------
+
+# Raw URL to latest.json in your GitHub repo
+LATEST_JSON_URL = "https://raw.githubusercontent.com/FaiyazAzam/jupyter-course-assistant/main/latest.json"
+
+# Local cache directory for downloaded indexes
+CACHE_ROOT = Path.home() / ".jupyter_course_assistant" / "course_index_cache"
+CURRENT_PTR_FILE = CACHE_ROOT / "CURRENT_VERSION.txt"
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8").strip()
+    except Exception:
+        return ""
+
+
+def _write_text(path: Path, content: str):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content, encoding="utf-8")
+
+
+def _fetch_json(url: str) -> dict:
+    with urllib.request.urlopen(url) as resp:
+        data = resp.read().decode("utf-8")
+    return json.loads(data)
+
+
+def _download_file(url: str, dest: Path):
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with urllib.request.urlopen(url) as resp, open(dest, "wb") as f:
+        f.write(resp.read())
+
+
+def _ensure_latest_course_index(verbose: bool = True) -> Path:
+    """
+    Ensures the latest course index is available locally.
+    Returns the local persist_dir path (nested course_index/ supported).
+    """
+    CACHE_ROOT.mkdir(parents=True, exist_ok=True)
+
+    if verbose:
+        print(f"[Index] Checking for updates via: {LATEST_JSON_URL}")
+
+    latest = _fetch_json(LATEST_JSON_URL)
+    version = latest.get("version")
+    url = latest.get("url")
+
+    if not version or not url:
+        raise RuntimeError("[Index] latest.json must contain 'version' and 'url'.")
+
+    local_dir = CACHE_ROOT / version
+    current_version = _read_text(CURRENT_PTR_FILE)
+
+    # If already installed and current, return it
+    if local_dir.exists() and current_version == version:
+        persist_dir = local_dir / "course_index"
+        if persist_dir.exists():
+            if verbose:
+                print(f"[Index] Course index is up-to-date ✅ (version={version})")
+            return persist_dir
+
+    # If folder exists but pointer is different, activate it
+    if local_dir.exists() and current_version != version:
+        _write_text(CURRENT_PTR_FILE, version)
+        persist_dir = local_dir / "course_index"
+        if persist_dir.exists():
+            if verbose:
+                print(f"[Index] Found cached index version={version} ✅ (activated)")
+            return persist_dir
+
+    # Otherwise download + unzip
+    zip_path = CACHE_ROOT / f"{version}.zip"
+    if verbose:
+        print(f"[Index] Downloading course index version={version} ...")
+        print(f"[Index] From: {url}")
+
+    _download_file(url, zip_path)
+
+    # Unzip into local_dir
+    local_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path, "r") as z:
+        z.extractall(local_dir)
+
+    # Nested folder expected: local_dir/course_index/
+    persist_dir = local_dir / "course_index"
+    if not persist_dir.exists():
+        # fallback: if files are at root
+        persist_dir = local_dir
+
+    _write_text(CURRENT_PTR_FILE, version)
+
+    if verbose:
+        print(f"[Index] Installed course index ✅ (version={version})")
+        print(f"[Index] Persist dir: {persist_dir}")
+
+    return persist_dir
+
 
 _AGENT = None
 _CTX = None
@@ -176,37 +281,36 @@ def _default_setup_if_missing(ns):
     # Embeddings are created once in build_course_memory.py by the instructor
     # using OpenAIEmbedding. Students only *query* a prebuilt index.
 
-    # --- 2️⃣ Load course materials and build the RAG index (or simple in-memory index) ---
+    # --- 2️⃣ Load persisted course index (auto-download via GitHub Releases) ---
     if ns.get("initial_tools") is None:
         tools = []
-        course_dir = Path(ns.get("COURSE_DIR", "course_materials"))
 
-        if course_dir.exists():
-            try:
-                docs = SimpleDirectoryReader(str(course_dir), recursive=True).load_data()
-                index = VectorStoreIndex.from_documents(docs)
-                qe = index.as_query_engine(similarity_top_k=5, response_mode="tree_summarize")
+        try:
+            persist_dir = _ensure_latest_course_index(verbose=True)
 
-                tools = [
-                    QueryEngineTool(
-                        query_engine=qe,
-                        metadata=ToolMetadata(
-                            name="course_qna",
-                            description="Answer questions using course materials with proper citations.",
-                        ),
-                    )
-                ]
-                print("[RAG] Course QnA tool registered ✅")
-            except Exception as e:
-                print(f"[RAG] Tool setup failed: {e}")
-        else:
-            print("[RAG] No course_materials folder found.")
+            storage_context = StorageContext.from_defaults(persist_dir=str(persist_dir))
+            index = load_index_from_storage(storage_context)
+            qe = index.as_query_engine(similarity_top_k=5, response_mode="tree_summarize")
+
+            tools.append(
+                QueryEngineTool(
+                    query_engine=qe,
+                    metadata=ToolMetadata(
+                        name="course_qna",
+                        description="Answer questions using the instructor-built course index with citations.",
+                    ),
+                )
+            )
+            print("[RAG] Course QnA tool registered ✅ (loaded from persisted index)")
+        except Exception as e:
+            print(f"[RAG] Failed to load persisted course index: {e}")
+            print("[RAG] Tip: Ensure latest.json exists and the Release zip URL is correct.")
 
         ns["initial_tools"] = tools
 
     print(
-        f"[RAG] course_materials found: {Path('course_materials').exists()}, "
-        f"tools so far: {len(ns['initial_tools'])}, llm: Perplexity Sonar"
+        f"[RAG] tools so far: {len(ns['initial_tools'])}, llm: Perplexity Sonar; "
+        f"index cache: {CACHE_ROOT}"
     )
 
     # --- 3️⃣ Add notebook inspector tool ---
