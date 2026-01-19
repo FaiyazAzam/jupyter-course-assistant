@@ -286,12 +286,31 @@ This regenerates the persistent RAG index inside:
 course_index/
 ```
 
-3. Push the updated course memory so students receive the new content:
+3. Create a new zip bundle
+In repo root (PowerShell):
 ```
-course_materials/
-course_index/
-build_course_memory.py
+$ver = (Get-Date -Format "yyyy-MM-dd")
+Compress-Archive -Path course_index -DestinationPath ("course_index_" + $ver + ".zip") -Force
+Write-Host "Created: course_index_$ver.zip"
 ```
+
+4. Publish the zip as a new GitHub Release
+On GitHub:
+```
+1. Repo → Releases → Draft a new release
+
+2. Tag: index-YYYY-MM-DD (example: index-2026-01-25)
+
+3. Upload asset: course_index_YYYY-MM-DD.zip
+
+4. Publish
+
+5. Copy the asset URL
+```
+
+5. Update latest.json in repo root
+
+6. Commit + push ONLY latest.json
 
 # 📄 License
 
