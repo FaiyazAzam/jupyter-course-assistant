@@ -192,7 +192,7 @@ Follow these steps:
 
 ✅ 1. Create a Perplexity Account
 
-1. Go to: https://www.perplexity.ai
+1. Go to: https://www.perplexity.ai/backtoschool 
 
 2. Click Sign Up and create an account (Google / Apple / Email).
 
